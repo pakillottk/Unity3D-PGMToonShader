@@ -28,15 +28,12 @@
 			{
 				float4 vertex : POSITION;
 				float3 normal: NORMAL;
-				float2 uv : TEXCOORD0;
 			};
 
 			struct v2f
 			{
 				float4 pos : SV_POSITION;
-				float2 uv : TEXCOORD0;
 				float3 normal : TEXCOORD1;
-				float3 viewDir : TEXCOORD2;
 			};
 
 			v2f vert (appdata v)
@@ -45,9 +42,6 @@
 
 				o.pos = UnityObjectToClipPos(v.vertex+v.normal*(_OutlineThickness/100));
 				o.normal = UnityObjectToWorldNormal(v.normal);
-				o.uv = v.uv;
-				o.viewDir = normalize(UnityWorldSpaceViewDir(mul(unity_ObjectToWorld, v.vertex)));
-
 				return o;
 			}
 			
@@ -64,7 +58,7 @@
 		CGPROGRAM
 			#pragma surface surf ToonLight
 
-			sampler2D _ToonLut;
+			sampler2D _ToonLut;		
 			half3 _MinColor;
 			half3 _Color;
 			half3 _RimColor;
@@ -76,7 +70,7 @@
 
 				float3 lut = max(_MinColor, tex2D(_ToonLut, float2(NdotL, 0)));
 				float3 rim = _RimColor * pow(1 - ndotv, _RimPower) * NdotL;
-
+				
 				half4 c;
 				c.rgb = s.Albedo * _Color * _LightColor0.rgb * lut;
 				c.rgb += rim;
@@ -89,7 +83,7 @@
 			};
         
 			sampler2D _MainTex;
-				
+
 			void surf (Input IN, inout SurfaceOutput o) {
 				o.Albedo = tex2D (_MainTex, IN.uv_MainTex).rgb;
 			}
